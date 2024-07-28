@@ -7,7 +7,7 @@ import { LogBox } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActionSheetProvider } from '@expo/react-native-action-sheet'; // Import ActionSheetProvider
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 // Ignore specific logs
 LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);

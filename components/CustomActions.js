@@ -10,14 +10,14 @@ const CustomActions = (props) => {
   const storage = getStorage();
 
   const showActionSheet = () => {
-    console.log("Action Sheet Triggered");  // Debugging line
+    console.log("Action Sheet Triggered");
     showActionSheetWithOptions(
       {
         options: ['Select an image from library', 'Take a photo', 'Share location', 'Cancel'],
         cancelButtonIndex: 3,
       },
       async (buttonIndex) => {
-        console.log("Button Index Selected: ", buttonIndex);  // Debugging line
+        console.log("Button Index Selected: ", buttonIndex);
         switch (buttonIndex) {
           case 0:
             await pickImage();
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   icon: {
-    color: '#3A3B3C',  // Ensure this is a valid color
+    color: '#3A3B3C',
     fontSize: 40,
   },
 });

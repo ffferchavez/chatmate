@@ -1,4 +1,3 @@
-// CustomActions.js
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -11,12 +10,14 @@ const CustomActions = (props) => {
   const storage = getStorage();
 
   const showActionSheet = () => {
+    console.log("Action Sheet Triggered");  // Debugging line
     showActionSheetWithOptions(
       {
         options: ['Select an image from library', 'Take a photo', 'Share location', 'Cancel'],
         cancelButtonIndex: 3,
       },
       async (buttonIndex) => {
+        console.log("Button Index Selected: ", buttonIndex);  // Debugging line
         switch (buttonIndex) {
           case 0:
             await pickImage();
@@ -34,6 +35,20 @@ const CustomActions = (props) => {
     );
   };
 
+  const uploadAndSendImage = async (imageURI) => {
+    const uniqueRefString = `images/${Date.now()}`;
+    const newUploadRef = ref(storage, uniqueRefString);
+    const response = await fetch(imageURI);
+    const blob = await response.blob();
+
+    uploadBytes(newUploadRef, blob).then(async (snapshot) => {
+      const imageURL = await getDownloadURL(snapshot.ref);
+      props.onSend([{ _id: Date.now(), text: '', createdAt: new Date(), user: props.user, image: imageURL }]);
+    }).catch(error => {
+      console.error("Error uploading image: ", error);
+    });
+  };
+
   const pickImage = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -44,13 +59,7 @@ const CustomActions = (props) => {
       });
 
       if (!result.canceled) {
-        const { uri } = result.assets[0];
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        const storageRef = ref(storage, `images/${Date.now()}`);
-        const snapshot = await uploadBytes(storageRef, blob);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        props.onSend([{ _id: Date.now(), text: '', createdAt: new Date(), user: props.user, image: downloadURL }]);
+        uploadAndSendImage(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -67,13 +76,7 @@ const CustomActions = (props) => {
       });
 
       if (!result.canceled) {
-        const { uri } = result.assets[0];
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        const storageRef = ref(storage, `images/${Date.now()}`);
-        const snapshot = await uploadBytes(storageRef, blob);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        props.onSend([{ _id: Date.now(), text: '', createdAt: new Date(), user: props.user, image: downloadURL }]);
+        uploadAndSendImage(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Error taking photo:', error);
@@ -91,8 +94,7 @@ const CustomActions = (props) => {
       let location = await Location.getCurrentPositionAsync({});
       if (location) {
         const { latitude, longitude } = location.coords;
-        const locationMessage = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        props.onSend([{ _id: Date.now(), text: locationMessage, createdAt: new Date(), user: props.user, location: { latitude, longitude } }]);
+        props.onSend([{ _id: Date.now(), text: '', createdAt: new Date(), user: props.user, location: { latitude, longitude } }]);
       }
     } catch (error) {
       console.error('Error sharing location:', error);
@@ -117,7 +119,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   icon: {
-    color: '3A3B3C',
+    color: '#3A3B3C',  // Ensure this is a valid color
     fontSize: 40,
   },
 });

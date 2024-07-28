@@ -7,6 +7,7 @@ import { LogBox } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet'; // Import ActionSheetProvider
 
 // Ignore specific logs
 LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
@@ -56,27 +57,29 @@ const App = () => {
   }, [netInfo.isConnected]);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Start"
-        screenOptions={{
-          headerStyle: { backgroundColor: '#242526' },
-          headerTintColor: '#fff',
-          headerTitleAlign: 'center'
-        }}
-      >
-        <Stack.Screen 
-          name="Start" 
-          component={Start}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="Chat"
+    <ActionSheetProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Start"
+          screenOptions={{
+            headerStyle: { backgroundColor: '#242526' },
+            headerTintColor: '#fff',
+            headerTitleAlign: 'center'
+          }}
         >
-          {(props) => <Chat db={db} isConnected={isConnected} {...props} />}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen 
+            name="Start" 
+            component={Start}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="Chat"
+          >
+            {(props) => <Chat db={db} isConnected={isConnected} {...props} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ActionSheetProvider>
   );
 };
 
